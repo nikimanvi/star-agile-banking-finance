@@ -41,18 +41,23 @@ pipeline {
             }
         }
 
-        stage('Deploy to Kubernetes') {
+        stage('Deploy to Kubernetes via SSH Publisher') {
             steps {
-                sshagent(['slavenode1-cred']) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no devopsadmin@65.0.73.241 "
-                            cd /home/devopsadmin/star-agile-banking-finance &&
-                            git pull &&
-                            kubectl apply -f k8s/deployment.yaml &&
-                            kubectl apply -f k8s/service.yaml
-                        "
-                    '''
-                }
+                sshPublisher(publishers: [
+                    sshPublisherDesc(
+                        configName: 'Kubernetes_Master',
+                        transfers: [
+                            sshTransfer(
+                                sourceFiles: 'k8s/*.yaml',
+                                removePrefix: 'k8s',
+                                remoteDirectory: '.',
+                                execCommand: 'kubectl apply -f kdeploy.yaml',
+                                execTimeout: 120000
+                            )
+                        ],
+                        verbose: true
+                    )
+                ])
             }
         }
     }
@@ -63,6 +68,3 @@ pipeline {
         }
         failure {
             echo '❌ Pipeline failed.'
-        }
-    }
-}
