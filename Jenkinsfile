@@ -30,12 +30,14 @@ pipeline {
             }
         }
 
-        stage('Docker Login & Push') {
+        stage('Push Docker Image') {
             steps {
-                sh '''
-                    echo "" | docker login -u nikithamanvi --password-stdin
-                    docker push $DOCKER_IMAGE
-                '''
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    sh '''
+                        echo "$PASSWORD" | docker login -u "$USERNAME" --password-stdin
+                        docker push $DOCKER_IMAGE
+                    '''
+                }
             }
         }
 
