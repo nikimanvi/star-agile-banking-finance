@@ -51,7 +51,7 @@ pipeline {
                                 sourceFiles: 'k8s/*.yaml',
                                 removePrefix: 'k8s',
                                 remoteDirectory: '.',
-                                execCommand: 'kubectl apply -f kdeploy.yaml',
+                                execCommand: 'kubectl apply -f deployment.yaml && kubectl apply -f service.yaml',
                                 execTimeout: 120000
                             )
                         ],
