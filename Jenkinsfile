@@ -42,21 +42,16 @@ pipeline {
         }
 
         stage('Deploy to Kubernetes') {
-            steps {
-                sh '''
-                    kubectl apply -f k8s/deployment.yaml
+    steps {
+        sshagent(['slavenode1-cred']) {
+            sh '''
+                ssh -o StrictHostKeyChecking=no devopsadmin@<K8S_MASTER_IP> "
+                    cd /home/devopsadmin/star-agile-banking-finance &&
+                    kubectl apply -f k8s/deployment.yaml &&
                     kubectl apply -f k8s/service.yaml
-                '''
-            }
-        }
-    }
-
-    post {
-        success {
-            echo '✅ Deployment completed successfully.'
-        }
-        failure {
-            echo '❌ Pipeline failed.'
+                "
+            '''
         }
     }
 }
+
