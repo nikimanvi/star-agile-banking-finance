@@ -42,24 +42,25 @@ pipeline {
         }
 
         stage('Deploy to Kubernetes via SSH Publisher') {
-    steps {
-        sshPublisher(publishers: [
-            sshPublisherDesc(
-                configName: 'Kubernetes_Master',
-                transfers: [
-                    sshTransfer(
-                        sourceFiles: 'k8s/*.yaml',
-                        removePrefix: '',
-                        remoteDirectory: '.',
-                        execCommand: 'kubectl apply -f k8s/deployment.yaml && kubectl apply -f k8s/service.yaml',
-                        execTimeout: 120000
+            steps {
+                sshPublisher(publishers: [
+                    sshPublisherDesc(
+                        configName: 'Kubernetes_Master',
+                        transfers: [
+                            sshTransfer(
+                                sourceFiles: 'k8s/*.yaml',
+                                removePrefix: '',
+                                remoteDirectory: '.',
+                                execCommand: 'kubectl apply -f k8s/deployment.yaml && kubectl apply -f k8s/service.yaml',
+                                execTimeout: 120000
+                            )
+                        ],
+                        verbose: true
                     )
-                ],
-                verbose: true
-            )
-        ])
+                ])
+            }
+        }
     }
-}
 
     post {
         success {
