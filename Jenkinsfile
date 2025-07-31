@@ -63,6 +63,7 @@ pipeline {
                                     sshTransfer(
                                         sourceFiles: 'deployment.yaml',
                                         remoteDirectory: '/home/ec2-user/deploy',
+                                        remoteDirectorySDF: false,
                                         removePrefix: '',
                                         flatten: true,
                                         execCommand: 'ls -l /home/ec2-user/deploy && kubectl apply -f /home/ec2-user/deploy/deployment.yaml',
