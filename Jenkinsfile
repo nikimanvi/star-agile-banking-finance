@@ -64,7 +64,8 @@ pipeline {
                                         sourceFiles: 'deployment.yaml',
                                         remoteDirectory: '/home/ec2-user/deploy',
                                         removePrefix: '',
-                                        execCommand: 'kubectl apply -f /home/ec2-user/deploy/deployment.yaml',
+                                        flatten: true,
+                                        execCommand: 'ls -l /home/ec2-user/deploy && kubectl apply -f /home/ec2-user/deploy/deployment.yaml',
                                         execTimeout: 120000
                                     )
                                 ],
