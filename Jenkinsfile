@@ -62,7 +62,7 @@ stage('Deploy to EKS') {
                         transfers: [
                             sshTransfer(
                                 sourceFiles: 'deployment.yaml',
-                                remoteDirectory: 'home/ec2-user/deploy',
+                                remoteDirectory: '/home/ec2-user/deploy',
                                 remoteDirectorySDF: false,   
                                 removePrefix: '',
                                 flatten: true,
