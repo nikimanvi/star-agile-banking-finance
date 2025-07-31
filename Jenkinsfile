@@ -52,31 +52,32 @@ pipeline {
             }
         }
 
-        stage('Deploy to EKS') {
-            steps {
-                script {
-                    sshPublisher(
-                        publishers: [
-                            sshPublisherDesc(
-                                configName: 'eks-master',  // Jenkins > Manage Jenkins > Configure System > Publish Over SSH
-                                transfers: [
-                                    sshTransfer(
-                                        sourceFiles: 'deployment.yaml',
-                                        remoteDirectory: '/home/ec2-user/deploy',
-                                        remoteDirectorySDF: false,
-                                        removePrefix: '',
-                                        flatten: true,
-                                        execCommand: 'ls -l /home/ec2-user/deploy && kubectl apply -f /home/ec2-user/deploy/deployment.yaml',
-                                        execTimeout: 120000
-                                    )
-                                ],
-                                usePromotionTimestamp: false,
-                                verbose: true
+stage('Deploy to EKS') {
+    steps {
+        script {
+            sshPublisher(
+                publishers: [
+                    sshPublisherDesc(
+                        configName: 'eks-master',
+                        transfers: [
+                            sshTransfer(
+                                sourceFiles: 'deployment.yaml',
+                                remoteDirectory: '/home/ec2-user/deploy',
+                                remoteDirectorySDF: true,     // ✅ This makes it use ABSOLUTE path
+                                removePrefix: '',
+                                flatten: true,
+                                execCommand: 'ls -l /home/ec2-user/deploy && kubectl apply -f /home/ec2-user/deploy/deployment.yaml',
+                                execTimeout: 120000
                             )
-                        ]
+                        ],
+                        usePromotionTimestamp: false,
+                        verbose: true
                     )
-                }
-            }
+                ]
+            )
         }
+    }
+}
+
     }
 }
