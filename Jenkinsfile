@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent { label 'maven_slave' }  // Use the slave node with this label
 
     environment {
         DOCKER_IMAGE = "nikithamanvi/financeapp:${BUILD_NUMBER}"
@@ -17,5 +17,5 @@ pipeline {
                 sh 'mvn clean install'
             }
         }
-}
+    }
 }
