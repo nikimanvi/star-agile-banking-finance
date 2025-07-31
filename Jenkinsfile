@@ -61,12 +61,17 @@ stage('Deploy to EKS') {
                         configName: 'eks-master',
                         transfers: [
                             sshTransfer(
-                                sourceFiles: 'deployment.yaml',
+                                sourceFiles: 'deployment.yaml,service.yaml',
                                 removePrefix: '',
                                 remoteDirectory: '',
                                 remoteDirectorySDF: false,
                                 flatten: true,
-                                execCommand: 'mkdir -p /home/devopsadmin/deploy && mv deployment.yaml /home/devopsadmin/deploy/ && kubectl apply -f /home/devopsadmin/deploy/deployment.yaml',
+                                execCommand: '''
+                                    mkdir -p /home/devopsadmin/deploy &&
+                                    mv deployment.yaml service.yaml /home/devopsadmin/deploy/ &&
+                                    kubectl apply -f /home/devopsadmin/deploy/deployment.yaml &&
+                                    kubectl apply -f /home/devopsadmin/deploy/service.yaml
+                                ''',
                                 execTimeout: 120000
                             )
                         ],
@@ -78,6 +83,6 @@ stage('Deploy to EKS') {
         }
     }
 }
-
+        
     }
 }
