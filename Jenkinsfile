@@ -50,5 +50,30 @@ pipeline {
                 """
             }
         }
+
+    stage('Deploy to EKS') { 
+    steps {
+        sshPublisher(
+            publishers: [
+                sshPublisherDesc(
+                    configName: 'eks-master',  // This must match the name configured in Jenkins > Publish over SSH
+                    transfers: [
+                        sshTransfer(
+                            sourceFiles: 'deployment.yaml',  // Your manifest file in the workspace
+                            remoteDirectory: '/home/ec2-user/deploy',  // Destination folder on EKS master
+                            removePrefix: '',  // Optional: useful if 'deployment.yaml' is in a subfolder
+                            execCommand: 'kubectl apply -f /home/ec2-user/deploy/deployment.yaml',
+                            execTimeout: 120000
+                        )
+                    ],
+                    usePromotionTimestamp: false,
+                    verbose: true
+                )
+            ]
+        )
+    }
+}
+
+        
     }
 }
