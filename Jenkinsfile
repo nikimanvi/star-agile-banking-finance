@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'maven_slave' }  // Use the slave node with this label
+    agent { label 'maven_slave' }  // Slave node with Maven and Docker installed
 
     environment {
         DOCKER_IMAGE = "nikithamanvi/financeapp:${BUILD_NUMBER}"
@@ -28,12 +28,13 @@ pipeline {
                 """
             }
         }
-        stage('Login to Dockerhub') {
+
+        stage('Login to DockerHub') {
             steps {
                 echo 'Logging into DockerHub...'
                 withCredentials([usernamePassword(
-                    credentialsId: 'dockerloginid', 
-                    usernameVariable: 'DOCKERHUB_CREDENTIALS_USR', 
+                    credentialsId: 'dockerloginid',
+                    usernameVariable: 'DOCKERHUB_CREDENTIALS_USR',
                     passwordVariable: 'DOCKERHUB_CREDENTIALS_PSW')]) {
                         
                     sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
@@ -41,7 +42,7 @@ pipeline {
             }
         }
 
-        stage('Publish the Image to Dockerhub') {
+        stage('Publish the Image to DockerHub') {
             steps {
                 echo "Publishing Docker Image: ${DOCKER_IMAGE}"
                 sh """
@@ -51,29 +52,29 @@ pipeline {
             }
         }
 
-    stage('Deploy to EKS') { 
-    steps {
-        sshPublisher(
-            publishers: [
-                sshPublisherDesc(
-                    configName: 'eks-master',  // This must match the name configured in Jenkins > Publish over SSH
-                    transfers: [
-                        sshTransfer(
-                            sourceFiles: 'deployment.yaml',  // Your manifest file in the workspace
-                            remoteDirectory: '/home/ec2-user/deploy',  // Destination folder on EKS master
-                            removePrefix: '',  // Optional: useful if 'deployment.yaml' is in a subfolder
-                            execCommand: 'kubectl apply -f /home/ec2-user/deploy/deployment.yaml',
-                            execTimeout: 120000
-                        )
-                    ],
-                    usePromotionTimestamp: false,
-                    verbose: true
-                )
-            ]
-        )
-    }
-}
-
-        
+        stage('Deploy to EKS') {
+            steps {
+                script {
+                    sshPublisher(
+                        publishers: [
+                            sshPublisherDesc(
+                                configName: 'eks-master',  // Jenkins > Manage Jenkins > Configure System > Publish Over SSH
+                                transfers: [
+                                    sshTransfer(
+                                        sourceFiles: 'deployment.yaml',
+                                        remoteDirectory: '/home/ec2-user/deploy',
+                                        removePrefix: '',
+                                        execCommand: 'kubectl apply -f /home/ec2-user/deploy/deployment.yaml',
+                                        execTimeout: 120000
+                                    )
+                                ],
+                                usePromotionTimestamp: false,
+                                verbose: true
+                            )
+                        ]
+                    )
+                }
+            }
+        }
     }
 }
