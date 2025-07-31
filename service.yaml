@@ -10,5 +10,5 @@ spec:
     - name: http
       protocol: TCP
       port: 80          # Port exposed to outside world
-      targetPort: 8080  # Port inside the container (as seen in describe pod)
+      targetPort: 8081  # Port inside the container (as seen in describe pod)
       nodePort: 31367   # Custom NodePort (must be between 30000–32767)
