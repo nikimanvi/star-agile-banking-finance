@@ -62,11 +62,11 @@ stage('Deploy to EKS') {
                         transfers: [
                             sshTransfer(
                                 sourceFiles: 'deployment.yaml',
-                                remoteDirectory: '/home/ec2-user/deploy',
+                                remoteDirectory: '/home/devopsadmin/deploy',
                                 remoteDirectorySDF: false,   
                                 removePrefix: '',
                                 flatten: true,
-                                execCommand: 'ls -l /home/ec2-user/deploy && kubectl apply -f /home/ec2-user/deploy/deployment.yaml',
+                                execCommand: 'ls -l /home/devopsadmin/deploy && kubectl apply -f /home/devopsadmin/deploy/deployment.yaml',
                                 execTimeout: 120000
                             )
                         ],
