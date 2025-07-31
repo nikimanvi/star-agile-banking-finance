@@ -1,4 +1,3 @@
-cat > k8s/deployment.yaml <<EOF
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,4 +19,17 @@ spec:
         image: nikithamanvi/financeapp:latest
         ports:
         - containerPort: 8080
-EOF
+        imagePullPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: financeapp-service
+spec:
+  selector:
+    app: financeapp
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+  type: NodePort  # Change to LoadBalancer if using AWS EKS or other cloud providers
